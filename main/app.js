@@ -5,7 +5,7 @@ const Sequelize = require('sequelize')
 const mysql = require('mysql2/promise')
 
 const DB_USERNAME = 'root'
-const DB_PASSWORD = 'welcome12#'
+const DB_PASSWORD = 'p@ss'
 
 let conn
 
@@ -72,13 +72,24 @@ app.get('/students', async (req, res) => {
 })
 
 app.post('/students', async (req, res) => {
-    try{
-        // TODO
-    }
+    const student=req.body;
+        if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+            res.status(400).send({"message": "body is missing"})
+        }
+         else if(!student.name || !student.address || !student.age){
+             res.status(400).send({"message": "malformed request"})
+         }
+         else if(student.age<0)
+         {res.status(400).send({"message": "age should be a positive number"})}
+         
+          else{  try{ 
+                const result=Student.create(student);
+                res.status(201).send({"message": "created"})
+                }
     catch(err){
         console.warn(err.stack)
         res.status(500).json({message : 'server error'})        
-    }
+    }}
 })
 
 module.exports = app
